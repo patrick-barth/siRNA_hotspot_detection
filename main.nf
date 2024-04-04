@@ -76,7 +76,7 @@ workflow preprocessing {
     main:
         quality_control(input_reads)
         adapter_removal(input_reads)
-        length_filter(adapter_removal.out.fastq_length_filtered)
+        length_filter(adapter_removal.out.fastq_trimmed)
         if(params.filter_bac_cont){
             filter_bacterial_contamination(length_filter.out.fastq_length_filtered,kraken_db)
         }
