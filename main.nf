@@ -19,6 +19,12 @@ include{
     filter_bacterial_contamination
 } from './modules/read_processing.nf'
 
+include{
+    build_index
+    mapping
+    extract_perfect_hits
+} from './modules/alignment.nf'
+
 /*
  * Prints help and exits workflow afterwards when parameter --help is set to true
  */
@@ -103,13 +109,34 @@ workflow preprocessing {
         fastq_reads = processed_reads
 }
 
+workflow alignment {
+    take:
+        reads
+        reference
+    main:
+        build_index(reference)
+        mapping(build_index.out.index.first(),
+        reads)
+        extract_perfect_hits(mapping.out.bam_alignments)
 
+        versions = build_index.out.version.first()
+                    .concat(mapping.out.version.first())
+                    .concat(extract_perfect_hits.out.version.first())
+
+    emit:
+        all_alignments = mapping.out.bam_alignments
+        perfect_alignments = extract_perfect_hits.out.alignments
+
+        versions = versions
+        report = mapping.out.report
+}
 
 /*
  * Actual workflow connecting subworkflows
  */
 workflow {
     preprocessing(input_reads,kraken_db)
+    alignment(preprocessing.out.fastq_reads,input_reference)
 
     // Collect metadata
     collect_metadata()
