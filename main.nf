@@ -62,7 +62,7 @@ input_reads     = Channel.fromPath( params.reads )
 input_reference = Channel.fromPath( params.reference )
 
 // Collect all input files
-input_files = input_reads.concat(reference)
+input_files = input_reads.concat(input_reference)
                 .flatten().toList()
 
 /*
