@@ -16,7 +16,7 @@ include{
     quality_control_2
     adapter_removal
     length_filter
-    bacterial_contamination_filter
+    filter_bacterial_contamination
 } from './modules/read_processing.nf'
 
 /*
