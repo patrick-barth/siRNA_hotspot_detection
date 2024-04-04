@@ -65,7 +65,7 @@ process length_filter {
 	path("${task.process}.version.txt"), emit: version
 
 	"""
-	cutadapt -m ${params.min_length} -M ${params.max_length} -o ${query.simpleName}.fasta ${query}
+	cutadapt -m ${params.min_length} -M ${params.max_length} -o ${query.simpleName}.fastq ${query}
 
 	echo -e "${task.process}\tcutadapt\t\$(cutadapt --version)" > ${task.process}.version.txt
 	"""
