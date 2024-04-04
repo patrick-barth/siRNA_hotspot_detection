@@ -24,11 +24,6 @@ if ( params.help ) {
                 |Optional arguments:
                 |   --min_length    Minimum length for reads after adapter trimming.
                 |                   [default: ${params.min_length}]
-                |   --min_qual      Minimum base quality.
-                |                   [default: ${params.min_qual}]
-                |   --min_percent_qual_filter   Minimum percentage of bases within a read that need to
-                |                               be above the quality threshold
-                |                               [default: ${params.min_percent_qual_filter}]
                 |  -w            The NextFlow work directory. Delete the directory once the process
                 |                is finished [default: ${workDir}]""".stripMargin()
     // Print the help with the stripped margin and exit
@@ -42,29 +37,25 @@ if ( params.help ) {
  * Welcome log to be displayed before workflow
  */
 log.info """\
-         ${params.manifest.name} v${params.manifest.version}
-         ==========================
-         input from   : ${params.input_file}
-         output to    : ${params.output_dir}
-         --
-         run as       : ${workflow.commandLine}
-         started at   : ${workflow.start}
-         config files : ${workflow.configFiles}
-         """
-         .stripIndent()
+        ${params.manifest.name} v${params.manifest.version}
+        ==========================
+        reads        : ${params.reads}
+        reference    : ${params.reference}
+        output to    : ${params.output_dir}
+        --
+        run as       : ${workflow.commandLine}
+        started at   : ${workflow.start}
+        config files : ${workflow.configFiles}
+        """
+        .stripIndent()
 
 //essential input files
-input_reads     = Channel.fromPath( params.reads )			//FASTQ file(s) containing reads
-//non essential input files
-if(params.annotation != 'NO_FILE'){
-    annotation_file = Channel.fromPath( params.annotation )
-}
-annotation = file(params.annotation)
+input_reads     = Channel.fromPath( params.reads )
+input_reference = Channel.fromPath( params.reference )
 
 // Collect all input files
-input_files = input_reads.concat(Channel.of(annotation))
-                    .concat(reference)
-                    .flatten().toList()
+input_files = input_reads.concat(reference)
+                .flatten().toList()
 
 /*
  * Starting subworkflow descriptions
@@ -75,7 +66,13 @@ workflow preprocessing {
     main:
         quality_control(input_reads)
         adapter_removal(input_reads)
-        quality_filter(adapter_removal.out.fastq_trimmed)
+        length_filter(adapter_removal.out.fastq_length_filtered)
+        if(params.filter_bac_cont){
+            filter_bacterial_contaminations(length_filter.out.fastq_length_filtered)
+            reads_to_output = filter_bacterial_contaminations.out.fastq_bac_cont_filtered
+        } else {
+            reads_to_output = adapter_removal.out.fastq_length_filtered
+        }
         quality_control_2(quality_filter.out.fastq_quality_filtered)
 
     emit:
@@ -83,7 +80,6 @@ workflow preprocessing {
         multiqc_quality_control                     = quality_control.out
         multiqc_quality_control_post_preprocessing  = quality_control_2.out
         multiqc_adapter_removal                     = adapter_removal.out.report_trimming
-        multiqc_quality_filter                      = quality_filter.out.report_quality_filter
 
         // data for downstream processes
         fastq_reads_quality_filtered                = quality_filter.out.fastq_quality_filtered
