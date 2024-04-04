@@ -11,6 +11,14 @@ include{
     collect_versions
 } from './modules/default_processes.nf'
 
+include{
+    quality_control
+    quality_control_2
+    adapter_removal
+    length_filter
+    bacterial_contamination_filter
+} from './modules/read_processing.nf'
+
 /*
  * Prints help and exits workflow afterwards when parameter --help is set to true
  */
@@ -60,29 +68,39 @@ input_files = input_reads.concat(reference)
 /*
  * Starting subworkflow descriptions
  */
+kraken_db = file(params.kraken_db_dir).toAbsolutePath()
 workflow preprocessing {
     take: 
         input_reads
+        kraken_db
     main:
         quality_control(input_reads)
         adapter_removal(input_reads)
         length_filter(adapter_removal.out.fastq_length_filtered)
         if(params.filter_bac_cont){
-            filter_bacterial_contaminations(length_filter.out.fastq_length_filtered)
-            reads_to_output = filter_bacterial_contaminations.out.fastq_bac_cont_filtered
-        } else {
-            reads_to_output = adapter_removal.out.fastq_length_filtered
+            filter_bacterial_contamination(length_filter.out.fastq_length_filtered,kraken_db)
         }
-        quality_control_2(quality_filter.out.fastq_quality_filtered)
+        processed_reads = params.filter_bac_cont ? filter_bacterial_contamination.out.fastq_bac_cont_filtered : length_filter.out.fastq_length_filtered
+        quality_control_2(processed_reads)
+
+        versions = quality_control.out.version.first()
+                    .concat(quality_control_2.out.version.first())
+                    .concat(adapter_removal.out.version.first())
+                    .concat(length_filter.out.version.first())
+
+        versions = params.filter_bac_cont ? filter_bacterial_contamination.out.version : versions
 
     emit:
         //data for multiqc
         multiqc_quality_control                     = quality_control.out
         multiqc_quality_control_post_preprocessing  = quality_control_2.out
         multiqc_adapter_removal                     = adapter_removal.out.report_trimming
+        multiqc_bac_filter  = params.filter_bac_cont ? filter_bacterial_contamination.out.report : Channel.empty()
+
+        versions = versions
 
         // data for downstream processes
-        fastq_reads_quality_filtered                = quality_filter.out.fastq_quality_filtered
+        fastq_reads = processed_reads
 }
 
 
