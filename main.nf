@@ -92,8 +92,8 @@ workflow preprocessing {
 
     emit:
         //data for multiqc
-        multiqc_quality_control                     = quality_control.out
-        multiqc_quality_control_post_preprocessing  = quality_control_2.out
+        multiqc_quality_control                     = quality_control.out.output
+        multiqc_quality_control_post_preprocessing  = quality_control_2.out.output
         multiqc_adapter_removal                     = adapter_removal.out.report
         multiqc_bac_filter  = params.filter_bac_cont ? filter_bacterial_contamination.out.report : Channel.empty()
 
