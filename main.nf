@@ -109,7 +109,7 @@ workflow preprocessing {
  * Actual workflow connecting subworkflows
  */
 workflow {
-    preprocessing(input_reads)
+    preprocessing(input_reads,kraken_db)
 
     // Collect metadata
     collect_metadata()
