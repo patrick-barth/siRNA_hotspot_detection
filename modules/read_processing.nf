@@ -61,7 +61,7 @@ process length_filter {
 	path(query)
 
 	output:
-	path("${query.simpleName}.fasta"), 	 emit: fastq_length_filtered
+	path("${query.simpleName}.fastq"), 	 emit: fastq_length_filtered
 	path("${task.process}.version.txt"), emit: version
 
 	"""
