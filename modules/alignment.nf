@@ -52,14 +52,14 @@ process mapping {
 
 process extract_perfect_hits {
 	tag {query.simpleName}
-	publishDir "${params.output_dir}/perfect-alignments", mode: 'copy', pattern: "${bam.simpleName}.perfect_hits.bam"
+	publishDir "${params.output_dir}/perfect-alignments", mode: 'copy', pattern: "${query.simpleName}.perfect_hits.bam"
 
 	input:
 	path(query)
 
 	output:
-	path("${bam.simpleName}.perfect_hits.bam"), emit: bam_alignments
-    path("${task.process}.version.txt"), 		emit: version
+	path("${query.simpleName}.perfect_hits.bam"),   emit: bam_alignments
+    path("${task.process}.version.txt"), 		    emit: version
 
 	script:
 	"""
