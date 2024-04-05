@@ -125,7 +125,7 @@ workflow alignment {
 
     emit:
         all_alignments = mapping.out.bam_alignments
-        perfect_alignments = extract_perfect_hits.out.alignments
+        perfect_alignments = extract_perfect_hits.out.bam_alignments
 
         versions = versions
         report = mapping.out.report

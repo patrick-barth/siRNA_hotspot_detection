@@ -58,7 +58,7 @@ process extract_perfect_hits {
 	path(query)
 
 	output:
-	path("${bam.simpleName}.perfect_hits.bam"), emit: bam_perfect_alignments
+	path("${bam.simpleName}.perfect_hits.bam"), emit: bam_alignments
     path("${task.process}.version.txt"), 		emit: version
 
 	script:
