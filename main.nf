@@ -26,6 +26,7 @@ include{
 } from './modules/alignment.nf'
 
 include{
+    sort_alignments
     index_alignments
     transform_to_bed
     find_potential_hotspots
@@ -143,7 +144,8 @@ workflow coverage_visualization {
         alignments
         reference
     main:
-        index_alignments(alignments)
+        sort_alignments(alignments)
+        index_alignments(sort_alignments.out.bam_sorted)
         transform_to_bed(index_alignments.out.bam_bai_index)
         //find_potential_hotspots
         generate_R_plots(transform_to_bed.out.bed_coverage,reference)

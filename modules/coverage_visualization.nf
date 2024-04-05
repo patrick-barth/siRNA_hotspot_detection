@@ -1,5 +1,22 @@
+process sort_alignments{
+	tag {query.simpleName}
+
+	input:
+	path(query)
+
+	output:
+	path("${query.baseName}.sorted.bam"), 	emit: bam_sorted
+	path("${task.process}.version.txt"), 	emit: version
+
+	"""
+	samtools sort ${query} -o ${query.baseName}.sorted.bam
+
+	echo -e "${task.process}\tsamtools\t\$(samtools --version | head -1 | rev | cut -f1 -d' ' | rev)" >> ${task.process}.version.txt
+	"""
+}
+
 process index_alignments {
-	tag {query}
+	tag {query.simpleName}
 
 	input:
 	path(query)
@@ -37,7 +54,7 @@ process transform_to_bed {
 //TODO: Check how the script needs to be adapted for forward reverse split
 //TODO: get version
 process find_potential_hotspots {
-	publishDir "${params.output}/potential-hotspots", mode: 'copy'
+	publishDir "${params.output_dir}/potential-hotspots", mode: 'copy'
 
 	input:
 	tuple path(query_for), path(query_rev)
@@ -53,7 +70,7 @@ process find_potential_hotspots {
 }
 
 process generate_R_plots {
-	publishDir "${params.output}", mode: 'copy', pattern: 'igv-session.xml'
+	publishDir "${params.output_dir}", mode: 'copy', pattern: 'igv-session.xml'
 
 	input:
 	tuple path(query_for), path(query_rev)
