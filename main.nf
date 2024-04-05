@@ -25,6 +25,13 @@ include{
     extract_perfect_hits
 } from './modules/alignment.nf'
 
+include{
+    index_alignments
+    transform_to_bed
+    find_potential_hotspots
+    generate_R_plots
+} from './modules/coverage_visualization.nf'
+
 /*
  * Prints help and exits workflow afterwards when parameter --help is set to true
  */
@@ -131,12 +138,27 @@ workflow alignment {
         report = mapping.out.report
 }
 
+workflow coverage_visualization {
+    take:
+        alignments
+        reference
+    main:
+        index_alignments(alignments)
+        transform_to_bed(index_alignments.out.bam_bai_index)
+        //find_potential_hotspots
+        generate_R_plots(transform_to_bed.out.bed_coverage,reference)
+
+}
+
 /*
  * Actual workflow connecting subworkflows
  */
 workflow {
     preprocessing(input_reads,kraken_db)
     alignment(preprocessing.out.fastq_reads,input_reference)
+    coverage_visualization(alignment.out.perfect_alignments)
+
+    //Further analyses
 
     // Collect metadata
     collect_metadata()
