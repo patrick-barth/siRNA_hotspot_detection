@@ -24,8 +24,8 @@ process mapping {
 	path(query)
 
 	output:
-	path "${query.simpleName}.bam", 			emit: bam_alignments
-	path "${query.simpleName}.statistics.txt", 	emit: report
+	path("${query.simpleName}.bam"), 			emit: bam_alignments
+	path("${query.simpleName}.statistics.txt"), emit: report
 	path("${task.process}.version.txt"), 		emit: version
 
 	script:
@@ -47,5 +47,24 @@ process mapping {
 
 	echo -e "${task.process}\tbowtie2\t\$(bowtie2 --version | head -1 | rev | cut -f1 -d' ' | rev)" > ${task.process}.version.txt
 	echo -e "${task.process}\tsamtools\t\$(samtools --version | head -1 | rev | cut -f1 -d' ' | rev)" >> ${task.process}.version.txt
+	"""
+}
+
+process filter_perfect_hits {
+	tag {query.simpleName}
+	publishDir "${params.output_dir}/perfect-alignments", mode: 'copy', pattern: "${bam.simpleName}.perfect_hits.bam"
+
+	input:
+	path(query)
+
+	output:
+	path("${bam.simpleName}.perfect_hits.bam"), emit: bam_perfect_alignments
+    path("${task.process}.version.txt"), 		emit: version
+
+	script:
+	"""
+	samtools view -F 4 -h ${query} | awk '/^@/ || !/XS:i:/' | samtools view -bS - > ${query.simpleName}.perfect_hits.bam
+    
+    echo -e "${task.process}\tsamtools\t\$(samtools --version | head -1 | rev | cut -f1 -d' ' | rev)" >> ${task.process}.version.txt
 	"""
 }
