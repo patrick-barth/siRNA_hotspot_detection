@@ -156,7 +156,7 @@ workflow coverage_visualization {
 workflow {
     preprocessing(input_reads,kraken_db)
     alignment(preprocessing.out.fastq_reads,input_reference)
-    coverage_visualization(alignment.out.perfect_alignments)
+    coverage_visualization(alignment.out.perfect_alignments,input_reference)
 
     //Further analyses
 
