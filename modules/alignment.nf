@@ -50,7 +50,7 @@ process mapping {
 	"""
 }
 
-process filter_perfect_hits {
+process extract_perfect_hits {
 	tag {query.simpleName}
 	publishDir "${params.output_dir}/perfect-alignments", mode: 'copy', pattern: "${bam.simpleName}.perfect_hits.bam"
 
@@ -64,7 +64,7 @@ process filter_perfect_hits {
 	script:
 	"""
 	samtools view -F 4 -h ${query} | awk '/^@/ || !/XS:i:/' | samtools view -bS - > ${query.simpleName}.perfect_hits.bam
-    
+
     echo -e "${task.process}\tsamtools\t\$(samtools --version | head -1 | rev | cut -f1 -d' ' | rev)" >> ${task.process}.version.txt
 	"""
 }
