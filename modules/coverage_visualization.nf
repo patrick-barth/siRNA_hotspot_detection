@@ -25,12 +25,12 @@ process transform_to_bed {
 	tuple path(query), path(index) 
 
 	output:
-	tuple path("${bam.simpleName}.for.bed"), path("${bam.simpleName}.rev.bed"), emit: bed_coverage
+	tuple path("${query.simpleName}.for.bed"), path("${query.simpleName}.rev.bed"), emit: bed_coverage
 
 	script:
 	"""
-    genomeCoverageBed -ibam ${bam} -bg -strand + > ${bam.simpleName}.for.bed
-	genomeCoverageBed -ibam ${bam} -bg -strand - > ${bam.simpleName}.rev.bed
+    genomeCoverageBed -ibam ${query} -bg -strand + > ${query.simpleName}.for.bed
+	genomeCoverageBed -ibam ${query} -bg -strand - > ${query.simpleName}.rev.bed
 	"""
 }
 
