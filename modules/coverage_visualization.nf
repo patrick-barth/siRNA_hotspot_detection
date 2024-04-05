@@ -46,8 +46,8 @@ process transform_to_bed {
 
 	script:
 	"""
-    genomeCoverageBed -ibam ${query} -bg -strand + > ${query.simpleName}.for.bed
-	genomeCoverageBed -ibam ${query} -bg -strand - > ${query.simpleName}.rev.bed
+    genomeCoverageBed -ibam ${query} -bga -strand + > ${query.simpleName}.for.bed
+	genomeCoverageBed -ibam ${query} -bga -strand - > ${query.simpleName}.rev.bed
 	"""
 }
 
