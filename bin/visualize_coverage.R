@@ -70,6 +70,6 @@ df_cov_percent$reverse <- unlist(lapply(df_cov_percent$position, function(x) {
 
 df_cov_percent$position <- df_cov_percent$position / 10
 
-write.csv(df_cov,paste(output,"_absolute_values.csv",sep=""))
-write.csv(df_cov_percent,paste(output,"_percent_values.csv",sep=""))
+write.csv(df_cov,paste(output,"_absolute_values.csv",sep=""),row.names = FALSE)
+write.csv(df_cov_percent,paste(output,"_percent_values.csv",sep=""), row.names = FALSE)
   
