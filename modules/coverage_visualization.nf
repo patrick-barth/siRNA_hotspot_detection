@@ -58,7 +58,6 @@ process find_potential_hotspots {
 
 	input:
 	tuple path(query_for), path(query_rev)
-    file(reference)
 
 	output:
 	path("${query_for.simpleName}.hotspots.txt")
@@ -70,6 +69,7 @@ process find_potential_hotspots {
 }
 
 process generate_R_plots {
+	tag {query_for.simpleName}
 	publishDir "${params.output_dir}", mode: 'copy', pattern: 'igv-session.xml'
 
 	input:
@@ -77,6 +77,9 @@ process generate_R_plots {
 	path(ref)
 
 	"""
-	echo "hi"
+	visualize_coverage.R \
+		--input_for ${query_for} \
+		--input_rev ${query_rev} \
+		--output ${query_for.simpleName}
 	"""
 }
