@@ -18,19 +18,16 @@ option_list <- list(
               help="Bed file with reverse coverage", metavar="character"),
   make_option(c("-o", "--output"), type="character", default="output",
               help="Output file", metavar="character"),
-  make_option(c("-t","--type"), type="character",default="png",
-              help="File type of output plot", metavar="character")
+  make_option(c("-t", "--type"), type="character", default="pdf",
+              help="Output file", metavar="character")
 )
 opt_parser <- OptionParser(option_list=option_list)
 opt <- parse_args(opt_parser)
 
 forward <- opt$input_for
 reverse <- opt$input_rev
-
-# tmp
-forward <- "/home/patrick/tmp/workflow-timo/ID22_41_L29_P8_3_S52_L001_R1_001.for.bed"
-reverse <- "/home/patrick/tmp/workflow-timo/ID22_41_L29_P8_3_S52_L001_R1_001.rev.bed"
-# tmp end
+output <- opt$output
+type <- opt$type
 
 forward <- read.csv(forward, header = FALSE, sep = "\t", col.names = c("chrom","start","end","coverage"))
 reverse <- read.csv(reverse, header = FALSE, sep = "\t", col.names = c("chrom","start","end","coverage"))
@@ -41,3 +38,38 @@ reverse$end <- reverse$end + 1
 
 forward.vec <- fill_coverage(forward)
 reverse.vec <- fill_coverage(reverse)
+reverse.vec <- reverse.vec * -1
+
+df_cov <- data.frame(position=1:length(forward.vec),
+                     forward=forward.vec,
+                     reverse=reverse.vec)
+
+p <- ggplot(data = df_cov) +
+  geom_line(aes(x=position,y=forward)) +
+  geom_line(aes(x=position,y=reverse))
+
+ggsave(paste(output,".pdf",sep=''),
+       plot = p)
+
+
+position_percentages <- (df_cov$position / length(df_cov$position))*1000
+
+df_cov_percent <- data.frame(position=1:1000)
+
+df_cov_percent$forward <- unlist(lapply(df_cov_percent$position, function(x) {
+  tmp_pos <- max(which(abs(position_percentages - x)==min(abs(position_percentages - x))))
+  value <- unlist(df_cov[tmp_pos,"forward"])
+  return(value)
+}))
+
+df_cov_percent$reverse <- unlist(lapply(df_cov_percent$position, function(x) {
+  tmp_pos <- max(which(abs(position_percentages - x)==min(abs(position_percentages - x))))
+  value <- df_cov[tmp_pos,"reverse"]
+  return(value)
+}))
+
+df_cov_percent$position <- df_cov_percent$position / 10
+
+write.csv(df_cov,paste(output,"_absolute_values.csv",sep=""))
+write.csv(df_cov_percent,paste(output,"_percent_values.csv",sep=""))
+  
