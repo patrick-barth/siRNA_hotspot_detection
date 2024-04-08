@@ -58,6 +58,7 @@ process find_potential_hotspots {
 
 	input:
 	tuple path(query_for), path(query_rev)
+    file(reference)
 
 	output:
 	path("${query_for.simpleName}.hotspots.txt")
@@ -74,7 +75,6 @@ process generate_R_plots {
 
 	input:
 	tuple path(query_for), path(query_rev)
-	path(ref)
 
 	"""
 	visualize_coverage.R \
