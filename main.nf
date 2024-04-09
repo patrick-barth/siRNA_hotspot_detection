@@ -33,6 +33,17 @@ include{
     generate_R_plots
 } from './modules/coverage_visualization.nf'
 
+include{
+    get_read_names
+    collect_reads
+    extract_reads
+} from './modules/read_extraction.nf'
+
+include{
+    get_length_distribution
+    calc_percent
+} from './modules/length_distribution.nf'
+
 /*
  * Prints help and exits workflow afterwards when parameter --help is set to true
  */
@@ -128,8 +139,8 @@ workflow alignment {
         extract_perfect_hits(mapping.out.bam_alignments)
 
         versions = build_index.out.version.first()
-                    .concat(mapping.out.version.first())
-                    .concat(extract_perfect_hits.out.version.first())
+            .concat(mapping.out.version.first())
+            .concat(extract_perfect_hits.out.version.first())
 
     emit:
         all_alignments = mapping.out.bam_alignments
@@ -149,6 +160,35 @@ workflow coverage_visualization {
         transform_to_bed(index_alignments.out.bam_bai_index)
         //find_potential_hotspots
         generate_R_plots(transform_to_bed.out.bed_coverage)
+}
+
+workflow read_extraction {
+    take:
+        alignments
+        reads
+    main:
+        get_read_names(alignments)
+        collect_reads(reads.collect()) //If several samples should be analysed in parallel this needs to be adapted
+        extract_reads(get_read_names.out.names
+            .combine(collect_reads.out.reads))
+
+        versions = get_read_names.out.version.first()
+            .concat(extract_reads.out.version.first())
+
+    emit:
+        reads = extract_reads.out.reads
+        versions = versions
+}
+
+workflow length_distribution {
+    take:
+        reads
+    main:
+        get_length_distribution(reads)
+        calc_percent(get_length_distribution.out.distribution)
+
+    emit:
+        percentages = calc_percent.out.percent
 
 }
 
@@ -158,6 +198,8 @@ workflow coverage_visualization {
 workflow {
     preprocessing(input_reads,kraken_db)
     alignment(preprocessing.out.fastq_reads,input_reference)
+    read_extraction(alignment.out.all_alignments)
+    length_distribution(read_extraction.out.reads)
     coverage_visualization(alignment.out.perfect_alignments,input_reference)
 
     //Further analyses
@@ -166,9 +208,9 @@ workflow {
     collect_metadata()
     get_md5sum(input_files)
     collect_versions(collect_metadata.out.version
-                        .concat(get_md5sum.out.version)
-                        .unique()
-                        .flatten().toList()
+        .concat(get_md5sum.out.version)
+        .unique()
+        .flatten().toList()
     )
 }
 
