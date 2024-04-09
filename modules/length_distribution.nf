@@ -24,7 +24,7 @@ process calc_percent {
     path(query)
 
     output:
-    path("${query.simpleName}.perc.txt"), emit: percentage
+    path("${query.simpleName}.perc.txt"), emit: percent
     path("${task.process}.version.txt"), 	emit: version
 
     script:
