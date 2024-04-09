@@ -198,8 +198,9 @@ workflow length_distribution {
 workflow {
     preprocessing(input_reads,kraken_db)
     alignment(preprocessing.out.fastq_reads,input_reference)
-    read_extraction(alignment.out.all_alignments)
-    length_distribution(read_extraction.out.reads)
+    read_extraction(alignment.out.all_alignments,)
+    length_distribution(read_extraction.out.reads,
+        preprocessing.out.fastq_reads)
     coverage_visualization(alignment.out.perfect_alignments,input_reference)
 
     //Further analyses
