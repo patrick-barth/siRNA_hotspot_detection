@@ -67,7 +67,7 @@ process find_potential_hotspots {
 	def cutoff = params.cutoff_hotspot ? '--cutoff ' + params.cutoff_hotspot : ''
 	"""
 	hotspot-detection.py --input ${query_for} ${percentile} ${cutoff} > ${query_for.simpleName}.hotspots.for.txt
-	hotspot-detection.py --input ${query_rev} --cutoff ${cutoff} > ${query_rev.simpleName}.hotspots.rev.txt
+	hotspot-detection.py --input ${query_rev} ${cutoff} > ${query_rev.simpleName}.hotspots.rev.txt
 	"""
 }
 
