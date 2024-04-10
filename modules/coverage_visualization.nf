@@ -64,9 +64,10 @@ process find_potential_hotspots {
 	tuple path("${query_for.simpleName}.hotspots.for.txt"), path("${query_rev.simpleName}.hotspots.rev.txt")
 
 	script:
-	def cutoff = params.hotspot_cutoff ? params.hotspot_cutoff : '-1'
+	def percentile = params.percentile_hotspot ? '--percentile ' + params.percentile_hotspot : ''
+	def cutoff = params.cutoff_hotspot ? '--cutoff ' + params.cutoff_hotspot : ''
 	"""
-	hotspot-detection.py --input ${query_for} --cutoff ${cutoff} > ${query_for.simpleName}.hotspots.for.txt
+	hotspot-detection.py --input ${query_for} ${percentile} --cutoff ${cutoff} > ${query_for.simpleName}.hotspots.for.txt
 	hotspot-detection.py --input ${query_rev} --cutoff ${cutoff} > ${query_rev.simpleName}.hotspots.rev.txt
 	"""
 }
