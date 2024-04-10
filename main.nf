@@ -158,7 +158,7 @@ workflow coverage_visualization {
         sort_alignments(alignments)
         index_alignments(sort_alignments.out.bam_sorted)
         transform_to_bed(index_alignments.out.bam_bai_index)
-        //find_potential_hotspots
+        find_potential_hotspots(transform_to_bed.out.bed_coverage)
         generate_R_plots(transform_to_bed.out.bed_coverage)
 }
 

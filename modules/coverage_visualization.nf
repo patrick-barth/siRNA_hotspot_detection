@@ -54,18 +54,20 @@ process transform_to_bed {
 //TODO: Check how the script needs to be adapted for forward reverse split
 //TODO: get version
 process find_potential_hotspots {
-	publishDir "${params.output_dir}/potential-hotspots", mode: 'copy'
+	publishDir "${params.output_dir}/potential-hotspots", mode: 'copy', pattern: "*.hotspots.*.txt"
 
 	input:
 	tuple path(query_for), path(query_rev)
     file(reference)
 
 	output:
-	path("${query_for.simpleName}.hotspots.txt")
+	tuple path("${query_for.simpleName}.hotspots.for.txt"), path("${query_rev.simpleName}.hotspots.rev.txt")
 
 	script:
+	def cutoff = params.hotspot_cutoff ? params.hotspot_cutoff : '-1'
 	"""
-	hotspot-detection.py --input ${bed} --cutoff ${params.cutoff} > ${bed.simpleName}.hotspots.txt
+	hotspot-detection.py --input ${query_for} --cutoff ${cutoff} > ${query_for.simpleName}.hotspots.for.txt
+	hotspot-detection.py --input ${query_rev} --cutoff ${cutoff} > ${query_rev.simpleName}.hotspots.rev.txt
 	"""
 }
 
