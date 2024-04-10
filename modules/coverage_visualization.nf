@@ -58,7 +58,6 @@ process find_potential_hotspots {
 
 	input:
 	tuple path(query_for), path(query_rev)
-    file(reference)
 
 	output:
 	tuple path("${query_for.simpleName}.hotspots.for.txt"), path("${query_rev.simpleName}.hotspots.rev.txt")
