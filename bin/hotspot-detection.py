@@ -19,7 +19,7 @@ def main():
 	elif args.cutoff:
 		cutoff = int(args.cutoff)
 	else:
-		cutoff = 0
+		cutoff = 1
 
 	for area in areas:
 		# Check if the current area is the first or the last on the reference. If so then it is skipped
