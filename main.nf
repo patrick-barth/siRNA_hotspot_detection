@@ -98,7 +98,7 @@ input_files = input_reads.concat(input_reference)
                 .flatten().toList()
 
 //TODO: make correct channel for all lengths
-tmp_length = params.length_of_interest
+tmp_length = Channel.of(params.length_of_interest)
 
 /*
  * Starting subworkflow descriptions
