@@ -44,6 +44,13 @@ include{
     calc_percent
 } from './modules/length_distribution.nf'
 
+include{
+    get_length
+    get_nucleotide_distribution
+    calc_nuc_percent
+    visualize_nuc_distri
+} from './modules/nucleotide_distribution.nf'
+
 /*
  * Prints help and exits workflow afterwards when parameter --help is set to true
  */
@@ -89,6 +96,9 @@ input_reference = Channel.fromPath( params.reference )
 // Collect all input files
 input_files = input_reads.concat(input_reference)
                 .flatten().toList()
+
+//TODO: make correct channel for all lengths
+tmp_length = params.length_of_interest
 
 /*
  * Starting subworkflow descriptions
@@ -189,7 +199,17 @@ workflow length_distribution {
 
     emit:
         percentages = calc_percent.out.percent
+}
 
+workflow nucleotide_distribution {
+    take:
+        reads
+        length
+    main:
+        get_length(reads,length)
+        get_nucleotide_distribution(get_length.out.nuc_dist)
+        //calc_nuc_percent
+        //visualize_nuc_distri
 }
 
 /*
@@ -202,6 +222,7 @@ workflow {
         preprocessing.out.fastq_reads)
     length_distribution(read_extraction.out.reads)
     coverage_visualization(alignment.out.perfect_alignments,input_reference)
+    nucleotide_distribution(read_extraction.out.reads,tmp_length)
 
     //Further analyses
 
