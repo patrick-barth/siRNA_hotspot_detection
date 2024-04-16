@@ -6,7 +6,7 @@ process get_length {
     tuple path(query), val(length)
 
     output:
-    tuple path("${query.simpleName}.${length}.fastq"), val(${length}), emit: fastq_reads_len_filtered
+    tuple path("${query.simpleName}.${length}.fastq"), val("${length}"), emit: fastq_reads_len_filtered
 
     script:
     """
