@@ -207,7 +207,7 @@ workflow nucleotide_distribution {
         length
     main:
         get_length(reads.combine(length))
-        get_nucleotide_distribution(get_length.out.nuc_dist)
+        get_nucleotide_distribution(get_length.out.fastq_reads_len_filtered)
         //calc_nuc_percent
         //visualize_nuc_distri
 }
