@@ -3,10 +3,10 @@ process get_length {
     tag{query.simpleName}
 
     input:
-    tuple path(query), var(length)
+    tuple path(query), val(length)
 
     output:
-    tuple path("${query.simpleName}.${length}.fastq"), var(${length}), emit: fastq_reads_len_filtered
+    tuple path("${query.simpleName}.${length}.fastq"), val(${length}), emit: fastq_reads_len_filtered
 
     script:
     """
@@ -20,7 +20,7 @@ process get_nucleotide_distribution {
     tag{query.baseName}
 
     input:
-    tuple path(query), var(length)
+    tuple path(query), val(length)
 
     output:
     path("${query.baseName}.nuc_dist.tsv"), emit: nuc_dist
