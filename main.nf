@@ -46,6 +46,7 @@ include{
 
 include{
     get_length
+    get_seq_only
     get_nucleotide_distribution
     visualize_nuc_distri
 } from './modules/nucleotide_distribution.nf'
@@ -206,7 +207,8 @@ workflow nucleotide_distribution {
         length
     main:
         get_length(reads.combine(length))
-        get_nucleotide_distribution(get_length.out.fastq_reads_len_filtered)
+        get_seq_only(get_length.out.fastq_reads_len_filtered)
+        get_nucleotide_distribution(get_seq_only.out.txt_reads_only)
         //visualize_nuc_distri
 }
 
