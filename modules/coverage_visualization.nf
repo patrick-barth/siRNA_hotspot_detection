@@ -79,7 +79,10 @@ process generate_R_plots {
 	publishDir "${params.output_dir}/coverage", mode: 'copy', pattern: "${query_for.simpleName}"
 
 	input:
-	tuple path(query_for), path(query_rev), emit: cov_viz
+	tuple path(query_for), path(query_rev)
+
+	output:
+	path("${query_for.simpleName}.pdf"), emit: cov_viz
 	path("${task.process}.version.txt"), emit: version
 
 	"""
