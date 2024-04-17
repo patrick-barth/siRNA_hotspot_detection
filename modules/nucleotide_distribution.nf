@@ -31,7 +31,7 @@ process get_nucleotide_distribution {
     calc-nucleotide-distribution.py \
         --sequences ${query} \
         --output ${query.baseName}.nuc_dist.tsv \
-        --output_percentage ${query.baseName}.nuc_percent.tsv \
+        --output_percent ${query.baseName}.nuc_percent.tsv \
         --length ${length}
     """
 }
