@@ -55,7 +55,8 @@ def main():
 	if args.output_percent:
 		nucleotides_percent = [None] * length
 		total_count = sum(nucleotides_alignments[0].values())
-		for pos in nucleotides_alignments:
+		for pos in list(range(0,length)):
+			nucleotides_percent[pos] = {"A":0,"C":0,"G":0,"T":0,"N":0}
 			for nuc,count in nucleotides_alignments[pos].items():
 				nucleotides_percent[pos][nuc] = count/total_count * 100 if not total_count == 0 else 0
 			
