@@ -27,9 +27,6 @@ input <- opt$input
 output <- opt$output
 type <- opt$type
 
-# tmp
-input <- "/home/patrick/tmp/workflow-timo/ID22_41_L29_P8_3_S52_L001_R1_001.21.nuc_percent.tsv"
-# tmp end
 
 input <- read.csv(input, header = TRUE, row.names = 1,sep = "\t")
 
