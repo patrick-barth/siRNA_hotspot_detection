@@ -24,26 +24,15 @@ process get_nucleotide_distribution {
 
     output:
     path("${query.baseName}.nuc_dist.tsv"), emit: nuc_dist
+    path("${query.baseName}.nuc_percent.tsv"), emit: nuc_percent
 
     script:
     """
     calc-nucleotide-distribution.py \
         --sequences ${query} \
         --output ${query.baseName}.nuc_dist.tsv \
+        --output_percentage ${query.baseName}.nuc_percent.tsv \
         --length ${length}
-    """
-}
-
-process calc_nuc_percent {
-    tag{query.simpleName}
-
-    input:
-    path(query)
-
-    output:
-
-    script:
-    """
     """
 }
 

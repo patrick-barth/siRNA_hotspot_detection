@@ -16,6 +16,8 @@ parser.add_argument('--sequences','-s',
 					help='Sequences to count nucleotides')
 parser.add_argument('--output','-o', 
 					help='File to write output to')
+parser.add_argument('--output_percent','-p', 
+					help='File to write percentage output to')
 parser.add_argument('--length','-l', 
 					help='Length of sequences', default='21')
 parser.add_argument('what_shall_i_write_here', nargs=argparse.REMAINDER)
@@ -50,6 +52,14 @@ def main():
 
 	nucleotides_alignments = count_nucleotides(args.sequences)
 
+	if args.output_percentage:
+		nucleotides_percent = [None] * length
+		total_count = sum(nucleotides_alignments[0].values())
+		for pos in nucleotides_alignments:
+			for nuc,count in nucleotides_alignments[pos].items():
+				nucleotides_percent[pos][nuc] = count/total_count * 100 if not total_count == 0 else 0
+			
+
 	out_file = open(os.path.realpath(args.output), 'w')
 
 	out_file.write("%s\t%s\t%s\t%s\t%s\t%s\n" % (
@@ -71,6 +81,29 @@ def main():
 			pos["N"],
 		))
 		counter += 1
+
+	if args.output_percentage:
+		out_file = open(os.path.realpath(args.output_percentage), 'w')
+
+		out_file.write("%s\t%s\t%s\t%s\t%s\t%s\n" % (
+			"percentage_" + str(length),
+			"A",
+			"C",
+			"G",
+			"T",
+			"N"
+		))
+		counter = 1
+		for pos in nucleotides_percent:
+			out_file.write("%s\t%s\t%s\t%s\t%s\t%s\n" % (
+				str(counter),
+				pos["A"],
+				pos["C"],
+				pos["G"],
+				pos["T"],
+				pos["N"],
+			))
+			counter += 1
 
         
 
