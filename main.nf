@@ -209,7 +209,7 @@ workflow nucleotide_distribution {
         get_length(reads.combine(length))
         get_seq_only(get_length.out.fastq_reads_len_filtered)
         get_nucleotide_distribution(get_seq_only.out.txt_reads_only)
-        //visualize_nuc_distri
+        visualize_nuc_distri(get_nucleotide_distribution.out.nuc_percent)
 }
 
 /*
@@ -223,8 +223,6 @@ workflow {
     length_distribution(read_extraction.out.reads)
     coverage_visualization(alignment.out.perfect_alignments,input_reference)
     nucleotide_distribution(read_extraction.out.reads,tmp_length)
-
-    //Further analyses
 
     // Collect metadata
     collect_metadata()

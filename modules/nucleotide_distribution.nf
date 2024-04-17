@@ -31,7 +31,7 @@ process get_seq_only {
 
 //TODO: Add version
 process get_nucleotide_distribution {
-    publishDir "${params.output_dir}/nucleotide_distribution", mode: 'copy', pattern: "${query.baseName}.nuc_dist.tsv"
+    publishDir "${params.output_dir}/nucleotide_distribution", mode: 'copy', pattern: "${query.baseName}.nuc_*.tsv"
     tag{query.baseName}
 
     input:
@@ -51,15 +51,21 @@ process get_nucleotide_distribution {
     """
 }
 
+//TODO: Add version of R
 process visualize_nuc_distri {
     tag{query.simpleName}
+    publishDir "${params.output_dir}/nucleotide_distribution/visualization", mode: 'copy', pattern: "${query.baseName}.pdf"
 
     input:
     path(query)
 
     output:
+    path("${query.baseName}.pdf"), emit: nuc_dist_visualization
 
     script:
     """
+    visualize_nuc_cov.R --input ${query} \
+        --output ${query.baseName} \
+        --type pdf
     """
 }
