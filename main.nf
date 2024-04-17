@@ -170,6 +170,15 @@ workflow coverage_visualization {
         transform_to_bed(index_alignments.out.bam_bai_index)
         find_potential_hotspots(transform_to_bed.out.bed_coverage)
         generate_R_plots(transform_to_bed.out.bed_coverage)
+
+        versions = sort_alignments.out.version.first()
+            .concat(index_alignments.out.version.first())
+            .concat(transform_to_bed.out.version.first())
+            .concat(find_potential_hotspots.first())
+            .concat(generate_R_plots.first())
+    
+    emit:
+        versions = versions
 }
 
 workflow read_extraction {
@@ -197,8 +206,12 @@ workflow length_distribution {
         get_length_distribution(reads)
         calc_percent(get_length_distribution.out.distribution)
 
+        versions = get_length_distribution.out.version.first()
+            .concat(calc_percent.out.version.first())
+
     emit:
         percentages = calc_percent.out.percent
+        versions = versions
 }
 
 workflow nucleotide_distribution {
@@ -210,6 +223,13 @@ workflow nucleotide_distribution {
         get_seq_only(get_length.out.fastq_reads_len_filtered)
         get_nucleotide_distribution(get_seq_only.out.txt_reads_only)
         visualize_nuc_distri(get_nucleotide_distribution.out.nuc_percent)
+
+        versions = get_length.out.version.first()
+            .concat(get_nucleotide_distribution.out.first())
+            .concat(visualize_nuc_distri.out.first())
+
+    emit:
+        versions = versions
 }
 
 /*
@@ -228,7 +248,13 @@ workflow {
     collect_metadata()
     get_md5sum(input_files)
     collect_versions(collect_metadata.out.version
+        .concat(preprocessing.out.versions)
+        .concat(alignment.out.versions)
+        .concat(coverage_visualization.out.versions)
         .concat(get_md5sum.out.version)
+        .concat(read_extraction.out.versions)
+        .concat(length_distribution.out.versions)
+        .concat(nucleotide_distribution.out.versions)
         .unique()
         .flatten().toList()
     )

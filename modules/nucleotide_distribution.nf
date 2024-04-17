@@ -1,4 +1,3 @@
-//TODO: Add version
 process get_length {
     tag{query.simpleName}
 
@@ -7,10 +6,13 @@ process get_length {
 
     output:
     tuple path("${query.simpleName}.${length}.fastq"), val("${length}"), emit: fastq_reads_len_filtered
+    path("${task.process}.version.txt"), 	emit: version
 
     script:
     """
     cutadapt -m ${length} -M ${length} -o ${query.simpleName}.${length}.fastq ${query}
+
+    echo -e "${task.process}\tcutadapt\t\$(cutadapt --version)" > ${task.process}.version.txt
     """
 }
 
@@ -29,7 +31,6 @@ process get_seq_only {
     
 }
 
-//TODO: Add version
 process get_nucleotide_distribution {
     publishDir "${params.output_dir}/nucleotide_distribution", mode: 'copy', pattern: "${query.baseName}.nuc_*.tsv"
     tag{query.baseName}
@@ -40,6 +41,7 @@ process get_nucleotide_distribution {
     output:
     path("${query.baseName}.nuc_dist.tsv"), emit: nuc_dist
     path("${query.baseName}.nuc_percent.tsv"), emit: nuc_percent
+    path("${task.process}.version.txt"), 	emit: version
 
     script:
     """
@@ -48,10 +50,11 @@ process get_nucleotide_distribution {
         --output ${query.baseName}.nuc_dist.tsv \
         --output_percent ${query.baseName}.nuc_percent.tsv \
         --length ${length}
+
+    echo -e "${task.process}\tpython\t\$(python --version | rev | cut -d' ' -f1 | rev)" > ${task.process}.version.txt
     """
 }
 
-//TODO: Add version of R
 process visualize_nuc_distri {
     tag{query.simpleName}
     publishDir "${params.output_dir}/nucleotide_distribution/visualization", mode: 'copy', pattern: "${query.baseName}.pdf"
@@ -61,11 +64,14 @@ process visualize_nuc_distri {
 
     output:
     path("${query.baseName}.pdf"), emit: nuc_dist_visualization
+    path("${task.process}.version.txt"), 	emit: version
 
     script:
     """
     visualize_nuc_cov.R --input ${query} \
         --output ${query.baseName} \
         --type pdf
+
+    echo -e "${task.process}\tR\t\$(Rscript --version 2>&1 | cut -d' ' -f5)" > ${task.process}.version.txt
     """
 }

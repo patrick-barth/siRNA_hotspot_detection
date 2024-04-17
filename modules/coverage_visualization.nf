@@ -33,7 +33,6 @@ process index_alignments {
 	"""
 }
 
-//TODO: get version
 process transform_to_bed {
 	tag {query}
 	publishDir "${params.output_dir}/bed-files", mode: 'copy'
@@ -43,16 +42,17 @@ process transform_to_bed {
 
 	output:
 	tuple path("${query.simpleName}.for.bed"), path("${query.simpleName}.rev.bed"), emit: bed_coverage
+	path("${task.process}.version.txt"), emit: version
 
 	script:
 	"""
     genomeCoverageBed -ibam ${query} -bga -strand + > ${query.simpleName}.for.bed
 	genomeCoverageBed -ibam ${query} -bga -strand - > ${query.simpleName}.rev.bed
+
+	echo -e "${task.process}\tgenomeCoverageBed\t\$(genomeCoverageBed 2>&1 | head -3 | tail -1 | cut -d' ' -f2)" > ${task.process}.version.txt
 	"""
 }
 
-//TODO: Check how the script needs to be adapted for forward reverse split
-//TODO: get version
 process find_potential_hotspots {
 	publishDir "${params.output_dir}/potential-hotspots", mode: 'copy', pattern: "*.hotspots.*.txt"
 
@@ -61,6 +61,7 @@ process find_potential_hotspots {
 
 	output:
 	tuple path("${query_for.simpleName}.hotspots.for.txt"), path("${query_rev.simpleName}.hotspots.rev.txt")
+	path("${task.process}.version.txt"), emit: version
 
 	script:
 	def percentile = params.percentile_hotspot ? '--percentile ' + params.percentile_hotspot : ''
@@ -68,20 +69,25 @@ process find_potential_hotspots {
 	"""
 	hotspot-detection.py --input ${query_for} ${percentile} ${cutoff} > ${query_for.simpleName}.hotspots.for.txt
 	hotspot-detection.py --input ${query_rev} ${cutoff} > ${query_rev.simpleName}.hotspots.rev.txt
+
+	echo -e "${task.process}\tpython\t\$(python --version | cut -d' ' -f2)" > ${task.process}.version.txt
 	"""
 }
 
 process generate_R_plots {
 	tag {query_for.simpleName}
-	publishDir "${params.output_dir}", mode: 'copy', pattern: 'igv-session.xml'
+	publishDir "${params.output_dir}/coverage", mode: 'copy', pattern: "${query_for.simpleName}"
 
 	input:
-	tuple path(query_for), path(query_rev)
+	tuple path(query_for), path(query_rev), emit: cov_viz
+	path("${task.process}.version.txt"), emit: version
 
 	"""
 	visualize_coverage.R \
 		--input_for ${query_for} \
 		--input_rev ${query_rev} \
 		--output ${query_for.simpleName}
+
+	echo -e "${task.process}\tR\t\$(Rscript --version 2>&1 | cut -d' ' -f5)" > ${task.process}.version.txt
 	"""
 }
