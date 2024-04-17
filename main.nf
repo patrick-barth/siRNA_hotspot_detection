@@ -47,7 +47,6 @@ include{
 include{
     get_length
     get_nucleotide_distribution
-    calc_nuc_percent
     visualize_nuc_distri
 } from './modules/nucleotide_distribution.nf'
 
@@ -208,7 +207,6 @@ workflow nucleotide_distribution {
     main:
         get_length(reads.combine(length))
         get_nucleotide_distribution(get_length.out.fastq_reads_len_filtered)
-        //calc_nuc_percent
         //visualize_nuc_distri
 }
 
