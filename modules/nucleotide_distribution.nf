@@ -24,7 +24,7 @@ process get_seq_only {
     tuple path("${query.baseName}.txt"), val("${length}"), emit: txt_reads_only
 
     """
-    awk '{if(NR%4==2) print $1}' ${query} > ${query.baseName}.txt
+    awk '{if(NR%4==2) print \$1}' ${query} > ${query.baseName}.txt
     """
     
 }
