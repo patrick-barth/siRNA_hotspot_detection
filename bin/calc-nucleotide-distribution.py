@@ -52,7 +52,7 @@ def main():
 
 	nucleotides_alignments = count_nucleotides(args.sequences)
 
-	if args.output_percentage:
+	if args.output_percent:
 		nucleotides_percent = [None] * length
 		total_count = sum(nucleotides_alignments[0].values())
 		for pos in nucleotides_alignments:
@@ -82,8 +82,8 @@ def main():
 		))
 		counter += 1
 
-	if args.output_percentage:
-		out_file = open(os.path.realpath(args.output_percentage), 'w')
+	if args.output_percent:
+		out_file = open(os.path.realpath(args.output_percent), 'w')
 
 		out_file.write("%s\t%s\t%s\t%s\t%s\t%s\n" % (
 			"percentage_" + str(length),
