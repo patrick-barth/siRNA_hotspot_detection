@@ -40,6 +40,10 @@ include{
 } from './modules/read_extraction.nf'
 
 include{
+    count_RNAs
+} from './get_best_hits.nf'
+
+include{
     get_length_distribution
     calc_percent
 } from './modules/length_distribution.nf'
@@ -199,6 +203,14 @@ workflow read_extraction {
         versions = versions
 }
 
+workflow get_best_hits {
+    take:
+        reads
+    main:
+        get_seq_only(reads)
+        count_RNAs(get_seq_only.out.txt_reads_only)
+}
+
 workflow length_distribution {
     take:
         reads
@@ -225,8 +237,8 @@ workflow nucleotide_distribution {
         visualize_nuc_distri(get_nucleotide_distribution.out.nuc_percent)
 
         versions = get_length.out.version.first()
-            .concat(get_nucleotide_distribution.out.first())
-            .concat(visualize_nuc_distri.out.first())
+            .concat(get_nucleotide_distribution.out.version.first())
+            .concat(visualize_nuc_distri.out.version.first())
 
     emit:
         versions = versions
