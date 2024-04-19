@@ -18,19 +18,40 @@ process get_length_distribution {
 //TODO: Add container
 process calc_percent {
     tag{query.simpleName}
-    publishDir "${params.output_dir}/length-distribution", mode: 'copy', pattern: "${query.simpleName}.perc.txt"
+    publishDir "${params.output_dir}/length-distribution", mode: 'copy', pattern: "${query.simpleName}.length_dist.txt"
 
     input:
     path(query)
 
     output:
-    path("${query.simpleName}.perc.txt"), emit: percent
+    path("${query.simpleName}.length_dist.txt"), emit: percent
     path("${task.process}.version.txt"), 	emit: version
 
     script:
 	"""
-	percentage-for-length-distribution.py --input ${query} --output ${query.simpleName}.perc.txt
+	percentage-for-length-distribution.py --input ${query} --output ${query.simpleName}.length_dist.txt
 
     echo -e "${task.process}\tpython\t\$(python --version | rev | cut -d' ' -f1 | rev)" > ${task.process}.version.txt
 	"""
+}
+
+process visualize_length_dist {
+    tag{query.simpleName}
+    publishDir "${params.output_dir}/length_distribution/visualization", mode: 'copy', pattern: "${query.simpleName}.pdf"
+
+    input:
+    path(query)
+
+    output:
+    path("${query.simpleName}.pdf"), emit: len_dist_visualization
+    path("${task.process}.version.txt"), 	emit: version
+
+    script:
+    """
+    visualize_len_dis.R --input ${query} \
+        --output ${query.simpleName} \
+        --type pdf
+
+        echo -e "${task.process}\tR\t\$(Rscript --version 2>&1 | cut -d' ' -f5)" > ${task.process}.version.txt
+    """
 }

@@ -19,18 +19,17 @@ def main():
 	print(total_amount)
 
 	outFile = open(os.path.realpath( args.output ), 'w')
-	outFile.write( "%s\t%s\t%s\n" % (
+	outFile.write( "%s\t%s\t%s" % (
 		"length", "count", "percent"
 	))
 	for i in distribution:
 		percent = ( int(i["count"]) * 100 )/total_amount
-		outFile.write( "%s\t%s\t%s\n" % (
+		outFile.write( "\n%s\t%s\t%s" % (
 			i["length"],
 			i["count"],
 			str(percent)
 		) )
 
-	outFile.write( "Total amount of siRNAs: " + str(total_amount) )
 
 
 

@@ -35,7 +35,7 @@ process index_alignments {
 
 process transform_to_bed {
 	tag {query}
-	publishDir "${params.output_dir}/bed-files", mode: 'copy'
+	publishDir "${params.output_dir}/bed-files", mode: 'copy', pattern: "${query.simpleName}.*.bed"
 
 	input:
 	tuple path(query), path(index) 
@@ -76,7 +76,7 @@ process find_potential_hotspots {
 
 process generate_R_plots {
 	tag {query_for.simpleName}
-	publishDir "${params.output_dir}/coverage", mode: 'copy', pattern: "${query_for.simpleName}"
+	publishDir "${params.output_dir}/coverage", mode: 'copy', pattern: "${query_for.simpleName}.*"
 
 	input:
 	tuple path(query_for), path(query_rev)

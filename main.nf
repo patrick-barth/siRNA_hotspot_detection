@@ -46,6 +46,7 @@ include{
 include{
     get_length_distribution
     calc_percent
+    visualize_length_dist
 } from './modules/length_distribution.nf'
 
 include{
@@ -217,9 +218,11 @@ workflow length_distribution {
     main:
         get_length_distribution(reads)
         calc_percent(get_length_distribution.out.distribution)
+        visualize_length_dist(calc_percent.out.percent)
 
         versions = get_length_distribution.out.version.first()
             .concat(calc_percent.out.version.first())
+            .concat(visualize_length_dist.out.version.first())
 
     emit:
         percentages = calc_percent.out.percent
