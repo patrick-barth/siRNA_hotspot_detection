@@ -178,8 +178,8 @@ workflow coverage_visualization {
         versions = sort_alignments.out.version.first()
             .concat(index_alignments.out.version.first())
             .concat(transform_to_bed.out.version.first())
-            .concat(find_potential_hotspots.first())
-            .concat(generate_R_plots.first())
+            .concat(find_potential_hotspots.out.version.first())
+            .concat(generate_R_plots.out.version.first())
     
     emit:
         versions = versions
