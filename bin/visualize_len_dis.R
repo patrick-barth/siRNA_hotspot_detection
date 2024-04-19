@@ -20,7 +20,7 @@ type <- opt$type
 
 input <- read.csv(input, header = TRUE,sep = "\t")
 
-p <- ggplot(input[1:11,],aes(x=length,y=count)) +
+p <- ggplot(input,aes(x=length,y=count)) +
   geom_bar(stat='identity')
 
 ggsave(paste(output,".pdf",sep=''),
