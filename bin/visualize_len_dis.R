@@ -20,9 +20,6 @@ type <- opt$type
 
 input <- read.csv(input, header = TRUE,sep = "\t")
 
-input$row <- seq_len(nrow(input))
-dat <- melt(input,id.vars = 'row')
-
 p <- ggplot(input[1:11,],aes(x=length,y=count)) +
   geom_bar(stat='identity')
 
