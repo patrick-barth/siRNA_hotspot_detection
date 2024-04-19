@@ -41,7 +41,7 @@ include{
 
 include{
     count_RNAs
-} from './get_best_hits.nf'
+} from './modules/get_best_hits.nf'
 
 include{
     get_length_distribution
