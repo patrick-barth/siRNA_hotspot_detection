@@ -37,7 +37,7 @@ process calc_percent {
 
 process visualize_length_dist {
     tag{query.simpleName}
-    publishDir "${params.output_dir}/length_distribution/visualization", mode: 'copy', pattern: "${query.simpleName}.pdf"
+    publishDir "${params.output_dir}/length-distribution/visualization", mode: 'copy', pattern: "${query.simpleName}.pdf"
 
     input:
     path(query)
